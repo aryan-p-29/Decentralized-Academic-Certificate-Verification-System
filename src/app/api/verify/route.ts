@@ -1,6 +1,8 @@
 import { kv } from "@vercel/kv";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const hash = searchParams.get("hash") || searchParams.get("id"); // Accept 'hash' or 'id'
