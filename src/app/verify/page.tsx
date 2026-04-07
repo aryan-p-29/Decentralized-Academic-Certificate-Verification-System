@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Search, Loader2, CheckCircle, AlertTriangle, ShieldCheck } from "lucide-react";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
-export default function VerifyPage() {
+function VerifyContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const urlId = searchParams?.get("id");
@@ -157,5 +157,13 @@ export default function VerifyPage() {
                 )}
             </div>
         </div>
+    );
+}
+
+export default function VerifyPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">Loading verifier...</div>}>
+            <VerifyContent />
+        </Suspense>
     );
 }
