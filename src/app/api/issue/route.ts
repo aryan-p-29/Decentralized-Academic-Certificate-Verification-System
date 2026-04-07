@@ -19,12 +19,25 @@ export async function POST(req: Request) {
       timestamp,
     };
 
-    // Save to Vercel KV
-    await kv.set(formatHash, payload);
+    console.log("Saving to KV:", formatHash, payload);
+
+    try {
+      // Save to Vercel KV
+      await kv.set(formatHash, payload);
+    } catch (kvError: any) {
+      console.error("Critical KV Save Error:", kvError);
+      return NextResponse.json(
+        { error: `Database Save Failed: ${kvError.message}` },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ success: true, hash: formatHash, payload }, { status: 200 });
-  } catch (error) {
-    console.error("Error issuing certificate:", error);
-    return NextResponse.json({ error: "Failed to issue certificate" }, { status: 500 });
+  } catch (error: any) {
+    console.error("General API Error:", error);
+    return NextResponse.json(
+      { error: `Server execution failed: ${error.message}` },
+      { status: 500 }
+    );
   }
 }

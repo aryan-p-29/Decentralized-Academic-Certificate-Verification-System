@@ -54,17 +54,18 @@ export default function IssuerPage() {
 
             const data = await res.json();
 
-            if (res.ok && data.hash) {
+            if (!res.ok) {
+                throw new Error(data.error || "Failed to issue certificate");
+            }
+
+            if (data.hash) {
                 setLoadingText("Success! Redirecting...");
                 await delay(500);
                 router.push(`/certificate/${data.hash}`);
-            } else {
-                alert("Failed to issue certificate: " + (data.error || "Unknown Error"));
-                setIsIssuing(false);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert("Network error occurred.");
+            alert("Error: " + error.message);
             setIsIssuing(false);
         }
     };
