@@ -79,7 +79,8 @@ function VerifyContent() {
                             value={hashInput}
                             onChange={(e) => setHashInput(e.target.value)}
                             placeholder="Paste Transaction Hash (0x...)"
-                            className="flex-1 text-lg py-6 bg-slate-100"
+                            disabled={isVerifying}
+                            className="flex-1 text-lg py-6 bg-slate-100 text-slate-900 caret-blue-600 border-slate-300 focus-visible:ring-blue-500"
                         />
                         <Button type="submit" disabled={isVerifying || !hashInput.trim()} className="py-6 px-8 bg-blue-600 hover:bg-blue-700 text-white">
                             <Search className="w-5 h-5 mr-2" /> Verify
