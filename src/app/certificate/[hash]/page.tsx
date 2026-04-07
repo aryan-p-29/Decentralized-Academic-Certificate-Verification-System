@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { QRCodeSVG } from "qrcode.react";
+import { useEffect, useState, useRef, use } from "react";
+import { QRCodeCanvas } from "qrcode.react";
 import { motion } from "framer-motion";
 import { toPng } from "html-to-image";
 import { saveAs } from "file-saver";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Download, AlertTriangle, Award } from "lucide-react";
+import { Loader2, Download, AlertTriangle } from "lucide-react";
 
-export default function CertificatePage({ params }: { params: { hash: string } }) {
+export default function CertificatePage({ params }: { params: Promise<{ hash: string }> }) {
+    const { hash } = use(params);
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -19,12 +20,12 @@ export default function CertificatePage({ params }: { params: { hash: string } }
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            setVerificationUrl(`${window.location.origin}/verify?id=${params.hash}`);
+            setVerificationUrl(`${window.location.origin}/verify?id=${hash}`);
         }
 
         async function fetchCertificate() {
             try {
-                const res = await fetch(`/api/verify?hash=${params.hash}`);
+                const res = await fetch(`/api/verify?hash=${hash}`);
                 const result = await res.json();
 
                 if (!res.ok || result.error) {
@@ -39,13 +40,13 @@ export default function CertificatePage({ params }: { params: { hash: string } }
             }
         }
         fetchCertificate();
-    }, [params.hash]);
+    }, [hash]);
 
     const handleDownload = async () => {
         if (certificateRef.current === null) return;
         try {
-            const dataUrl = await toPng(certificateRef.current, { cacheBust: true, quality: 1.0, pixelRatio: 2 });
-            saveAs(dataUrl, `Certificate_${params.hash.slice(0, 10)}.png`);
+            const dataUrl = await toPng(certificateRef.current, { cacheBust: true, quality: 1.0, pixelRatio: 2, skipFonts: true });
+            saveAs(dataUrl, `Certificate_${hash.slice(0, 10)}.png`);
         } catch (err) {
             console.error("Failed to download image", err);
         }
@@ -103,7 +104,7 @@ export default function CertificatePage({ params }: { params: { hash: string } }
 
                     <div className="relative z-10 flex flex-col items-center text-center">
                         <div className="mb-6 rounded-full bg-blue-100 p-4 shadow-sm border border-blue-200">
-                            <Award className="w-16 h-16 text-blue-600" />
+                            <span className="text-6xl flex items-center justify-center">🎓</span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-800 mb-2">
@@ -153,7 +154,7 @@ export default function CertificatePage({ params }: { params: { hash: string } }
                                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">Scan to Verify</p>
                                 <div className="p-4 bg-white shadow-md rounded-xl border border-slate-100">
                                     {verificationUrl && (
-                                        <QRCodeSVG value={verificationUrl} size={130} level={"Q"} />
+                                        <QRCodeCanvas value={verificationUrl} size={130} level={"Q"} />
                                     )}
                                 </div>
                             </div>
