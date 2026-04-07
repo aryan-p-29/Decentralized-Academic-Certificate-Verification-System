@@ -54,8 +54,11 @@ export default function IssuerPage() {
 
             const data = await res.json();
 
+            // Explicitly check for !res.ok and alert the user immediately
             if (!res.ok) {
-                throw new Error(data.error || "Failed to issue certificate");
+                alert(`Error: ${data.error || "Failed to save to database"}`);
+                setIsIssuing(false);
+                return; // Stop redirection!
             }
 
             if (data.hash) {
@@ -65,7 +68,7 @@ export default function IssuerPage() {
             }
         } catch (error: any) {
             console.error(error);
-            alert("Error: " + error.message);
+            alert("Network Error: " + error.message);
             setIsIssuing(false);
         }
     };
